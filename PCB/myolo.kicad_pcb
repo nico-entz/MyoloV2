@@ -13212,7 +13212,7 @@
 		(uuid "74fc7ecb-a9bc-4d65-bc3a-65671a3018b8")
 		(at 79.9 87)
 		(property "Reference" "SiPM2"
-			(at 0 -0.5 0)
+			(at 10.15 -16.95 0)
 			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "6645a162-d9cd-4869-985f-6bd4443898b0")
@@ -13224,7 +13224,7 @@
 			)
 		)
 		(property "Value" "MicroFC-60035-SMT"
-			(at 0 1 0)
+			(at 10.4 -4.5 0)
 			(unlocked yes)
 			(layer "F.Fab")
 			(uuid "a2079cfb-a138-4f1f-8fc1-9e657617cbb3")
@@ -13326,7 +13326,7 @@
 			(uuid "5c31da5a-001c-4c75-9528-b04729bb5faf")
 		)
 		(fp_text user "${REFERENCE}"
-			(at 0 2.5 0)
+			(at 10 -17.05 0)
 			(unlocked yes)
 			(layer "F.Fab")
 			(uuid "3f9a27dd-cc98-48aa-9af7-99753e229dc6")
@@ -15388,7 +15388,7 @@
 		(uuid "a29e7c92-861b-4db1-8f74-9f51921b21e5")
 		(at 131 87.1)
 		(property "Reference" "SiPM1"
-			(at 0 -0.5 0)
+			(at 10.2 -16.55 0)
 			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "3554c4af-bc71-4970-9ced-7f3ef28cf0d4")
@@ -15400,7 +15400,7 @@
 			)
 		)
 		(property "Value" "MicroFC-60035-SMT"
-			(at 0 1 0)
+			(at 9.7 -4.5 0)
 			(unlocked yes)
 			(layer "F.Fab")
 			(uuid "0fa981c2-a7e1-4dcd-94b0-b4690b259ca8")
@@ -15502,7 +15502,7 @@
 			(uuid "25db6168-b96e-4776-997b-1a05fe36b8c8")
 		)
 		(fp_text user "${REFERENCE}"
-			(at 0 2.5 0)
+			(at 10.2 -16.6 0)
 			(unlocked yes)
 			(layer "F.Fab")
 			(uuid "7f08663f-e645-42ef-a357-50254cd371c7")
