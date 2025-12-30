@@ -5,8 +5,8 @@
 	(uuid "dc0990d6-dfea-4502-9a83-5fe7d15ba70a")
 	(paper "A4")
 	(title_block
-		(title "Myolo Amp+Peak Hold")
-		(date "2025-08-08")
+		(title "Myolo PCBs")
+		(date "2025-12-30")
 		(rev "1")
 		(company "Nico Entz")
 	)
