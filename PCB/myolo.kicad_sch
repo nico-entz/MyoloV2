@@ -7414,7 +7414,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "20k"
+		(property "Value" "22k"
 			(at 232.41 74.9299 0)
 			(effects
 				(font
@@ -9376,7 +9376,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "20k"
+		(property "Value" "22k"
 			(at 232.41 142.2399 0)
 			(effects
 				(font
@@ -10818,7 +10818,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "50"
+		(property "Value" "47"
 			(at 21.336 48.768 0)
 			(effects
 				(font
@@ -10887,7 +10887,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "50"
+		(property "Value" "47"
 			(at 54.356 48.768 0)
 			(effects
 				(font
