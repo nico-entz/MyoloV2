@@ -26,6 +26,7 @@
 #include <stdio.h>
 #include "ssd1306.h"
 #include "fonts.h"
+#include "math.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -35,25 +36,6 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-// Globale Variablen (außerhalb der Funktion deklarieren)
-uint32_t adc1_pulse_count = 0;
-uint32_t adc2_pulse_count = 0;
-uint32_t coincidence_count = 0;
-uint32_t start_time = 0;
-
-uint8_t adc1_in_pulse = 0;
-uint8_t adc2_in_pulse = 0;
-uint32_t adc1_sum = 0;
-uint32_t adc1_sum_count = 0;
-uint32_t adc2_sum = 0;
-uint32_t adc2_sum_count = 0;
-
-uint32_t adc1_pulse_start = 0;
-uint32_t adc2_pulse_start = 0;
-
-#define PULSE_THRESHOLD_HIGH 300
-#define PULSE_THRESHOLD_LOW 100
-#define COINCIDENCE_WINDOW_US 100000  // 50µs Zeitfenster für Koinzidenz
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -73,19 +55,7 @@ TIM_HandleTypeDef htim2;
 
 /* USER CODE BEGIN PV */
 I2C_HandleTypeDef hi2c1;
-
-long counter = 0;
-uint8_t written = 0;
-volatile long adc_callback_counter = 0;
-#define ADCBUFSIZE 1000
-uint32_t adcbuf[ADCBUFSIZE];
-uint8_t adc_ready = 0;
-
-char log_filename[32];
-uint32_t file_counter = 0;
 volatile uint32_t tim2_overflow = 0;
-
-
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -102,13 +72,6 @@ void MX_I2C1_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-// Hilfsfunktionen für CS-Pin (PA15)
-#define SD_CS_LOW()   HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, GPIO_PIN_RESET)
-#define SD_CS_HIGH()  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, GPIO_PIN_SET)
-// Timer für Mikrosekunden (z.B. TIM2 mit 1MHz = 1µs pro Tick)
-// In CubeMX: Timer mit Prescaler so einstellen, dass 1 Tick = 1µs
-#define GET_US_TICK() __HAL_TIM_GET_COUNTER(&htim2)
-
 /* USER CODE END 0 */
 
 /**
@@ -153,97 +116,90 @@ int main(void)
   HAL_Delay(1000);
 
   // String, den wir senden wollen
-      serial_print("USB OK!");
+  serial_print("USB OK!");
 
-      // Init lcd using one of the stm32HAL i2c typedefs
-      ssd1306_Init(&hi2c1);
+  // Init lcd using one of the stm32HAL i2c typedefs
+  ssd1306_Init(&hi2c1);
 
-      //some variables for FatFs
-          FATFS FatFs; 	//Fatfs handle
-          FIL fil; 		//File handle
-          FRESULT fres; //Result after operations
+  //some variables for FatFs
+  FATFS FatFs; 	//Fatfs handle
+  FRESULT fres; //Result after operations
 
-          //Open the file system
-          fres = f_mount(&FatFs, "", 1); //1=mount now
-          if (fres != FR_OK) {
-          	serial_print("sd error!\n");
-          } else {
-          	serial_print("sd ok!\n");
-          }
-
+  //Open the file system
+  fres = f_mount(&FatFs, "", 1); //1=mount now
+  if (fres != FR_OK) {
+	  serial_print("sd error!\n");
+  } else {
+	  serial_print("sd ok!\n");
+  }
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  //uint16_t adc1_max = 0;
-  //uint16_t adc2_max = 0;
-
-  //HAL_TIM_Base_Start(&htim2);
   HAL_TIM_Base_Start_IT(&htim2);
-  //start_time = HAL_GetTick();
 
-          // definitions for upper and lower threshold
-            // (detector is triggered if ADC value hits upper threshold)
-            // (all values are buffered until ADC value hits lower threshold)
-            // (then the mean value of these values is calculated)
-            uint16_t upper_thresh = 500;
-            uint16_t lower_thresh = 200;
+  // definitions for upper and lower threshold
+  // (detector is triggered if ADC value hits upper threshold)
+  // (all values are buffered until ADC value hits lower threshold)
+  // (then the mean value of these values is calculated)
+  uint16_t upper_thresh = 500;
+  uint16_t lower_thresh = 200;
 
-            // define allowed coincidence time difference
-            uint16_t coincidence_window = 100;
+  // define allowed coincidence time difference
+  uint16_t coincidence_window = 100;
 
-            uint8_t triggered = 0;
-            uint8_t triggered2 = 0;
+  uint8_t triggered = 0;
+  uint8_t triggered2 = 0;
 
-            uint32_t sumval = 0;
-            uint32_t conv_cnt = 0;
-            uint16_t res_val = 0;
+  uint32_t sumval = 0;
+  uint32_t conv_cnt = 0;
+  uint16_t res_val = 0;
 
-            uint32_t sumval2 = 0;
-            uint32_t conv_cnt2 = 0;
-            uint16_t res_val2 = 0;
+  uint32_t sumval2 = 0;
+  uint32_t conv_cnt2 = 0;
+  uint16_t res_val2 = 0;
 
-            uint32_t c1_evt_cnt = 0;
-            uint32_t c2_evt_cnt = 0;
-            uint32_t coinc_evt_cnt = 0;
+  uint32_t c1_evt_cnt = 0;
+  uint32_t c2_evt_cnt = 0;
+  uint32_t coinc_evt_cnt = 0;
 
-            uint32_t times1[100];
-            uint8_t counter1 = 0;
-            float rate1 = 0;
+  uint32_t times1[100];
+  uint8_t counter1 = 0;
+  float rate1 = 0;
 
-            uint32_t times2[100];
-            uint8_t counter2 = 0;
-            float rate2 = 0;
+  uint32_t times2[100];
+  uint8_t counter2 = 0;
+  float rate2 = 0;
 
-            uint32_t coinc_times[20];
-            uint8_t coinc_count = 0;
-            float coinc_rate = 0;
+  uint32_t coinc_times[20];
+  uint8_t coinc_count = 0;
+  float coinc_rate = 0;
 
-            uint32_t last_count1 = 0;
-            uint32_t last_count2 = 0;
+  uint32_t last_count1 = 0;
+  uint32_t last_count2 = 0;
 
-            // show status on display
-            ssd1306_Fill(Black);
+  // show status on display
+  ssd1306_Fill(Black);
 
-            ssd1306_UpdateScreen(&hi2c1);
+  ssd1306_UpdateScreen(&hi2c1);
 
-            float vref = 3.3f; // reference voltage
+  float vref = 3.3f; // reference voltage
+  uint32_t microsecs = micros32();
+  uint32_t microsecs2 = micros32();
 
-            uint32_t microsecs = micros32();
-            uint32_t microsecs2 = micros32();
+  // show empty readings on display
+  ssd1306_SetCursor(0, 0);
+  ssd1306_WriteString("Rate 1: ...", Font_7x10, White);
+  ssd1306_SetCursor(0, 15);
+  ssd1306_WriteString("Rate 2: ...", Font_7x10, White);
+  ssd1306_SetCursor(0, 30);
+  ssd1306_WriteString("Myonen: 0", Font_7x10, White);
+  ssd1306_SetCursor(0, 45);
+  ssd1306_WriteString("Myonen-Rate: ...", Font_7x10, White);
 
-            ssd1306_SetCursor(0, 0);
-            ssd1306_WriteString("Rate 1: ...", Font_7x10, White);
-            ssd1306_SetCursor(0, 15);
-            ssd1306_WriteString("Rate 2: ...", Font_7x10, White);
-            ssd1306_SetCursor(0, 30);
-            ssd1306_WriteString("Myonen: 0", Font_7x10, White);
-            ssd1306_SetCursor(0, 45);
-            ssd1306_WriteString("Myonen-Rate: ...", Font_7x10, White);
-
-            ssd1306_UpdateScreen(&hi2c1);
-        	HAL_ADC_Start(&hadc1);
-        	HAL_ADC_Start(&hadc2);
+  ssd1306_UpdateScreen(&hi2c1);
+  HAL_ADC_Start(&hadc1);
+  HAL_ADC_Start(&hadc2);
 
   while (1)
   {
@@ -258,145 +214,112 @@ int main(void)
 	uint16_t val2 = HAL_ADC_GetValue(&hadc2);
 
 	// process data from 1st ADC
-		      if (val >= upper_thresh) {
-		    	  triggered = 1;
-		    	  sumval = sumval + val;
-		    	  conv_cnt++;
-		    	  microsecs = micros32();
-		      } else if ((val < lower_thresh) && (triggered==1)) {
-		    	  res_val = (uint16_t)round(sumval/conv_cnt);
+	if (val >= upper_thresh) {
+	  triggered = 1;
+	  sumval = sumval + val;
+	  conv_cnt++;
+	  microsecs = micros32();
+	} else if ((val < lower_thresh) && (triggered==1)) {
+	  res_val = (uint16_t)round(sumval/conv_cnt);
+  	  float voltage = (res_val / 4095.0f) * vref;
 
-		    	  float voltage = (res_val / 4095.0f) * vref;
-		     	  //sprintf(buf, "%lu | %.3f V   ", microsecs, voltage);
-		     	  //ssd1306_SetCursor(0, 0);
-		     	  //ssd1306_WriteString(buf, Font_7x10, White);
-		     	  //ssd1306_UpdateScreen(&hi2c1);
+	  times1[counter1] = microsecs;
+	  counter1++;
 
-		          times1[counter1] = microsecs;
-		          counter1++;
+	  last_count1 = microsecs;
+	  // update count rates every 100 events
+	  if (counter1 == 100) {
+		  uint32_t timediff = times1[99]-times1[0];
+		  float timediff_in_min = timediff / 60000000.0f;
+		  rate1 = 100/timediff_in_min;
 
-		          last_count1 = microsecs;
-		          if (counter1 == 100) {
-		        	  uint32_t timediff = times1[99]-times1[0];
-		        	  float timediff_in_min = timediff / 60000000.0f;
-		        	  rate1 = 100/timediff_in_min;
+      	  char buf[20];
+      	  sprintf(buf, "Rate 1: %.1f", rate1);
+      	  ssd1306_SetCursor(0, 0);
+     	  ssd1306_WriteString(buf, Font_7x10, White);
+	   	  ssd1306_UpdateScreen(&hi2c1);
+	 	  counter1 = 0;
+	  }
 
-		        	  char buf[20];
-		        	  sprintf(buf, "Rate 1: %.1f", rate1);
-		        	  ssd1306_SetCursor(0, 0);
-		        	  ssd1306_WriteString(buf, Font_7x10, White);
-		        	  ssd1306_UpdateScreen(&hi2c1);
-		        	  counter1 = 0;
-		          }
+	  char usbbuf[20];
+	  uint8_t buflen = sprintf(usbbuf, "0,%lu,%.3f\n", microsecs, voltage);
+	  logToSD("log.txt", usbbuf);
+	  CDC_Transmit_FS((uint8_t*)usbbuf, buflen);
 
-		          char usbbuf[20];
-		          uint8_t buflen = sprintf(usbbuf, "0,%lu,%.3f\n", microsecs, voltage);
-		          logToSD("log.txt", usbbuf);
-		          //logToSD(usbbuf, buflen);
-		          CDC_Transmit_FS((uint8_t*)usbbuf, buflen);
+	  c1_evt_cnt++;
+	  sumval = 0;
+	  conv_cnt = 0;
+	  triggered = 0;
+	}
 
-		          c1_evt_cnt++;
+	// process data from 2nd ADC
+	if (val2 >= upper_thresh) {
+		triggered2 = 1;
+		sumval2 = sumval2 + val2;
+		conv_cnt2++;
+		microsecs2 = micros32();
+    } else if ((val2 < lower_thresh) && (triggered2 == 1)) {
+    	res_val2 = (uint16_t)round(sumval2/conv_cnt2);
+		float voltage2 = (res_val2 / 4095.0f) * vref;
+		times2[counter2] = microsecs2;
+		counter2++;
 
-		          if ((c1_evt_cnt % 100) == 0) {
-		        	  //findNewFilename();
-		          }
+		last_count2 = microsecs2;
 
-		    	  sumval = 0;
-		    	  conv_cnt = 0;
-		     	  triggered = 0;
+		// update count rates every 100 events
+		if (counter2 == 100) {
+			uint32_t timediff = times2[99]-times2[0];
+			float timediff_in_min = timediff / 60000000.0f;
+		    rate2 = 100/timediff_in_min;
+		    char buf[20];
+		    sprintf(buf, "Rate 2: %.1f", rate2);
+		    ssd1306_SetCursor(0, 15);
+		    ssd1306_WriteString(buf, Font_7x10, White);
+		    ssd1306_UpdateScreen(&hi2c1);
+		    counter2 = 0;
+		}
 
-			      //sprintf(buf, "%lu", c1_evt_cnt);
-			      //ssd1306_SetCursor(0, 30);
-			      //ssd1306_WriteString(buf, Font_7x10, White);
-			      //ssd1306_UpdateScreen(&hi2c1);
-		      }
+		char usbbuf[20];
+		uint8_t buflen = sprintf(usbbuf, "1,%lu,%.3f\n", microsecs2, voltage2);
+		logToSD("log.txt", usbbuf);
+		CDC_Transmit_FS((uint8_t*)usbbuf, buflen);
 
-		      // process data from 2nd ADC
-		      if (val2 >= upper_thresh) {
-		    	  triggered2 = 1;
-		      	  sumval2 = sumval2 + val2;
-		      	  conv_cnt2++;
-		    	  microsecs2 = micros32();
-		      } else if ((val2 < lower_thresh) && (triggered2 == 1)) {
-		    	  res_val2 = (uint16_t)round(sumval2/conv_cnt2);
+		c2_evt_cnt++;
+		sumval2 = 0;
+		conv_cnt2 = 0;
+		triggered2 = 0;
+    }
 
-		    	  float voltage2 = (res_val2 / 4095.0f) * vref;
-		     	  //sprintf(buf, "%lu | %.3f V   ", microsecs2, voltage2);
-		     	  //ssd1306_SetCursor(0, 15);
-		     	  //ssd1306_WriteString(buf, Font_7x10, White);
-		     	  //ssd1306_UpdateScreen(&hi2c1);
+	if ((last_count1 > 0) && (last_count2 > 0)) {
+		if (abs(last_count1-last_count2) < coincidence_window) {
+			coinc_evt_cnt++;
+		    coinc_times[coinc_count] = last_count1;
+			coinc_count++;
 
-		          times2[counter2] = microsecs2;
-		          counter2++;
+			sprintf(buf, "Myonen: %lu", coinc_evt_cnt);
+			ssd1306_SetCursor(0, 30);
+		    ssd1306_WriteString(buf, Font_7x10, White);
+		    ssd1306_UpdateScreen(&hi2c1);
 
-		          last_count2 = microsecs2;
+		    last_count1 = 0;
+		    last_count2 = 0;
+		}
 
-		          if (counter2 == 100) {
-		        	  uint32_t timediff = times2[99]-times2[0];
-		          	  float timediff_in_min = timediff / 60000000.0f;
-		          	  rate2 = 100/timediff_in_min;
+		// update coincidence count rates every 10 coincidence events
+		if (coinc_count == 10) {
+			uint32_t timediff = coinc_times[9]-coinc_times[0];
+		    float timediff_in_min = timediff / 60000000.0f;
+		    coinc_rate = 10/timediff_in_min;
 
-		          	  char buf[20];
-		          	  sprintf(buf, "Rate 2: %.1f", rate2);
-		          	  ssd1306_SetCursor(0, 15);
-		          	  ssd1306_WriteString(buf, Font_7x10, White);
-		          	  ssd1306_UpdateScreen(&hi2c1);
+		    char buf[20];
+		    sprintf(buf, "Myonen-Rate: %.1f", coinc_rate);
+		    ssd1306_SetCursor(0, 45);
+		    ssd1306_WriteString(buf, Font_7x10, White);
+		    ssd1306_UpdateScreen(&hi2c1);
 
-		          	  counter2 = 0;
-		          }
-
-		          //char usbbuf[20];
-		          //uint8_t buflen = sprintf(usbbuf, "1,%lu,%.3f\n", microsecs2, voltage2);
-		          //logToSD(usbbuf, buflen);
-		          //CDC_Transmit_FS((uint8_t*)usbbuf, buflen);
-		          char usbbuf[20];
-		          uint8_t buflen = sprintf(usbbuf, "1,%lu,%.3f\n", microsecs2, voltage2);
-		          //logToSD(usbbuf, buflen);
-		          logToSD("log.txt", usbbuf);
-		          CDC_Transmit_FS((uint8_t*)usbbuf, buflen);
-
-		          c2_evt_cnt++;
-		    	  sumval2 = 0;
-		    	  conv_cnt2 = 0;
-		     	  triggered2 = 0;
-
-		     	  //sprintf(buf, "%lu", c2_evt_cnt);
-		     	  //ssd1306_SetCursor(45, 30);
-		     	  //ssd1306_WriteString(buf, Font_7x10, White);
-		     	  //ssd1306_UpdateScreen(&hi2c1);
-		      }
-
-		      if ((last_count1 > 0) && (last_count2 > 0)) {
-		    	  if (abs(last_count1-last_count2) < coincidence_window) {
-		    		  coinc_evt_cnt++;
-
-		    		  coinc_times[coinc_count] = last_count1;
-					  coinc_count++;
-
-		    		  sprintf(buf, "Myonen: %lu", coinc_evt_cnt);
-		    		  ssd1306_SetCursor(0, 30);
-		    		  ssd1306_WriteString(buf, Font_7x10, White);
-		    		  ssd1306_UpdateScreen(&hi2c1);
-
-		    		  last_count1 = 0;
-		    		  last_count2 = 0;
-		    	  }
-
-		    	  if (coinc_count == 10) {
-		    		  uint32_t timediff = coinc_times[9]-coinc_times[0];
-		    		  float timediff_in_min = timediff / 60000000.0f;
-		    		  coinc_rate = 10/timediff_in_min;
-
-		    		  char buf[20];
-		    		  sprintf(buf, "Myonen-Rate: %.1f", coinc_rate);
-		    		  ssd1306_SetCursor(0, 45);
-		    		  ssd1306_WriteString(buf, Font_7x10, White);
-		    		  ssd1306_UpdateScreen(&hi2c1);
-
-		    		  coinc_count = 0;
-		    	  }
-		      }
-	//ADC_PulseDetection();
+		    coinc_count = 0;
+		}
+	}
   }
   /* USER CODE END 3 */
 }
@@ -743,50 +666,31 @@ void MX_I2C1_Init(void)
 void logToSD(const char* filename, const char* str) {
     FIL fil;
     FRESULT fres;
-    char msg[128];
 
     // Modus setzen
     BYTE mode = FA_WRITE;
-    //if (append) {
-        mode |= FA_OPEN_ALWAYS;
-    //} else {
-    //    mode |= FA_CREATE_ALWAYS;
-    //}
+    mode |= FA_OPEN_ALWAYS;
 
     // Datei öffnen
     fres = f_open(&fil, filename, mode);
-    //snprintf(msg, sizeof(msg), "f_open(\"%s\", mode=0x%02X): %d\n", filename, mode, fres);
-    //serial_print(msg);
 
-    // Wenn Append, an das Ende springen
-    //if (append) {
-        fres = f_lseek(&fil, f_size(&fil));
-        //snprintf(msg, sizeof(msg), "f_lseek to end: %d\n", fres);
-        //serial_print(msg);
+    fres = f_lseek(&fil, f_size(&fil));
 
-        if (fres != FR_OK) {
-            f_close(&fil);
-        }
-    //}
+    if (fres != FR_OK) {
+    	f_close(&fil);
+    }
 
     // Schreiben
     UINT bytesWrote = 0;
     size_t len = strlen(str);
     fres = f_write(&fil, str, len, &bytesWrote);
 
-    //snprintf(msg, sizeof(msg), "f_write: %d, wrote %u of %u bytes\n", fres, bytesWrote, (unsigned int)len);
-    //serial_print(msg);
-
     // Datei schließen
-    FRESULT closeRes = f_close(&fil);
-    //snprintf(msg, sizeof(msg), "f_close: %d\n", closeRes);
-    //serial_print(msg);
+    f_close(&fil);
 }
 
 void serial_print(const char* str) {
-    //if (hUsbDeviceFS.dev_state == USBD_STATE_CONFIGURED) {
-        CDC_Transmit_FS((uint8_t*)str, strlen(str));
-    //}
+	CDC_Transmit_FS((uint8_t*)str, strlen(str));
 }
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)

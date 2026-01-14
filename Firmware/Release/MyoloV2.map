@@ -141,39 +141,6 @@ Discarded input sections
  .text          0x00000000        0x0 ./Core/Src/main.o
  .data          0x00000000        0x0 ./Core/Src/main.o
  .bss           0x00000000        0x0 ./Core/Src/main.o
- .bss.file_counter
-                0x00000000        0x4 ./Core/Src/main.o
- .bss.log_filename
-                0x00000000       0x20 ./Core/Src/main.o
- .bss.adc_ready
-                0x00000000        0x1 ./Core/Src/main.o
- .bss.adcbuf    0x00000000      0xfa0 ./Core/Src/main.o
- .bss.adc_callback_counter
-                0x00000000        0x4 ./Core/Src/main.o
- .bss.written   0x00000000        0x1 ./Core/Src/main.o
- .bss.counter   0x00000000        0x4 ./Core/Src/main.o
- .bss.adc2_pulse_start
-                0x00000000        0x4 ./Core/Src/main.o
- .bss.adc1_pulse_start
-                0x00000000        0x4 ./Core/Src/main.o
- .bss.adc2_sum_count
-                0x00000000        0x4 ./Core/Src/main.o
- .bss.adc2_sum  0x00000000        0x4 ./Core/Src/main.o
- .bss.adc1_sum_count
-                0x00000000        0x4 ./Core/Src/main.o
- .bss.adc1_sum  0x00000000        0x4 ./Core/Src/main.o
- .bss.adc2_in_pulse
-                0x00000000        0x1 ./Core/Src/main.o
- .bss.adc1_in_pulse
-                0x00000000        0x1 ./Core/Src/main.o
- .bss.start_time
-                0x00000000        0x4 ./Core/Src/main.o
- .bss.coincidence_count
-                0x00000000        0x4 ./Core/Src/main.o
- .bss.adc2_pulse_count
-                0x00000000        0x4 ./Core/Src/main.o
- .bss.adc1_pulse_count
-                0x00000000        0x4 ./Core/Src/main.o
  .text          0x00000000        0x0 ./Core/Src/ssd1306.o
  .data          0x00000000        0x0 ./Core/Src/ssd1306.o
  .bss           0x00000000        0x0 ./Core/Src/ssd1306.o
