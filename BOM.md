@@ -3,7 +3,7 @@ In dieser Liste finden Sie alle benötigten Bauteile und Werkzeuge, um selbst ei
 # Bauteile
 ## Spezialbauteile
 ### Platine
-Platinenset **direkt** bestellen: https://aisler.net/pjm48e-neitmedia/myolov2/myolo
+Platinenset **direkt** bestellen: [https://aisler.net/p/DRWNQMMB](https://aisler.net/p/DRWNQMMB)
 Fertigungsdaten für Platinenset (Gerber): https://....
 KiCAD-Dateien für Platinenset: https://...
 
