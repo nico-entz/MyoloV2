@@ -4,11 +4,14 @@ In dieser Liste finden Sie alle benötigten Bauteile und Werkzeuge, um selbst ei
 ## Spezialbauteile
 ### Platine
 Platinenset **direkt** bestellen: [https://aisler.net/p/DRWNQMMB](https://aisler.net/p/DRWNQMMB)
+
 Fertigungsdaten für Platinenset (Gerber): https://....
+
 KiCAD-Dateien für Platinenset: https://...
 
 ###  Szintillatoren
 Szintillatoren (BC408 / 5x5x1cm) direkt bestellen (**2x**): https://www.ebay.de/itm/264903211281
+
 Vorschläge für alternative Bezugsquellen sind jederzeit willkommen.
 ### Mikrocontroller
 |Bezeichnung auf Platine / Schaltplan |   Typ       | Anzahl
@@ -16,8 +19,11 @@ Vorschläge für alternative Bezugsquellen sind jederzeit willkommen.
 |U3                   | BluePill-Board mit STM32F103C6T8 | 1
 | zur Programmierung  | ST-Link v2        						    | 1
 BluePill-Board und STLink finden Sie auf gängigen Plattformen, z.B.  
+
 ebay: https://www.ebay.de/itm/406405705535 (BluePill) | https://www.ebay.de/itm/116898601926 (ST-Link)
+
 Amazon: https://www.amazon.de/dp/B077MJKCVT (BluePill) | https://www.amazon.de/dp/B07QBLNDPM (ST-Link)
+
 ## Kleinteile
 ### Lichtdetektoren / SiPM
 |Bezeichnung auf Platine / Schaltplan |   Typ    | Anzahl
