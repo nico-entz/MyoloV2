@@ -16,10 +16,8 @@ An den Testpunkten sollte - je nach Testpunkt - entweder eine Spannung oder eine
 
 Die Spannungen können Sie mit jedem Multimeter für ein paar Euro einfach nachmessen.
 
-Für die Messung der Pulsformen benötigen Sie ein Oszilloskop.
-
-  
-  
+Für die Messung der Pulsformen benötigen Sie ein Oszilloskop. Die meisten Fehler finden Sie aber auch ohne Oszilloskop. Messen Sie die Spannungen der Spannungstestpunkte - wenn bis dort alles passt, kann es nur an der Verstärkerschaltung oder an den Szintillatormodulen liegen.
+ 
 
 Um die Messungen durchzuführen, verbinden Sie die Masse des Multimeters oder des Oszilloskopes mit TP0 (GND / Masse) und die Messspitze mit dem jeweiligen Testpunkt, den Sie messen möchten.
 
@@ -31,7 +29,7 @@ Dann verbinden Sie die andere Messspitze mit den jeweiligen Testpunkten. Im Folg
 
 Idealerweise arbeiten Sie sich von vorne bis hinten durch diese Liste - so finden sich die wichtigsten Fehler schneller.
 
-  
+ 
 
 ## TP5
 
