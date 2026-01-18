@@ -5,9 +5,7 @@ In dieser Liste finden Sie alle benötigten Bauteile und Werkzeuge, um selbst ei
 ### Platine
 Platinenset **direkt** bestellen: [https://aisler.net/p/DRWNQMMB](https://aisler.net/p/DRWNQMMB)
 
-Fertigungsdaten für Platinenset (Gerber): https://....
-
-KiCAD-Dateien für Platinenset: https://...
+KiCAD-Dateien für Platinenset: https://https://github.com/nico-entz/MyoloV2/tree/main/PCB
 
 ###  Szintillatoren
 Szintillatoren (BC408 / 5x5x1cm) direkt bestellen (**2x**): https://www.ebay.de/itm/264903211281
@@ -73,12 +71,12 @@ Amazon: https://www.amazon.de/dp/B077MJKCVT (BluePill) | https://www.amazon.de/d
 |L1, L2             | 47 uF                      | 2
 
 # Verbrauchsmaterial
- - Teflonband aus dem Sanitärbereich (https://www.amazon.de/dp/B09GM4F8T8)
- - Schwarzes Isolierband aus dem Elektronikbereich (https://www.amazon.de/dp/B0GBWG8949)
- - Lötzinn, möglichst fein (z.B. 0,38mm Durchmesser) (z.B. https://www.digikey.de/de/products/detail/chip-quik-inc/SMDSWLF-015-1OZ/9558153)
- - Schleifpapier (z.B. https://www.amazon.de/dp/B0DLWW9518)
- - Silikonöl (z.B. https://www.amazon.de/dp/B089SQCN5G)
- - verschiedenfarbige Kabel (Litze)
+- Teflonband aus dem Sanitärbereich (z.B. https://www.amazon.de/dp/B09GM4F8T8)
+- Schwarzes Isolierband aus dem Elektronikbereich (z.B. https://www.amazon.de/dp/B0GBWG8949)
+- Lötzinn, möglichst fein (z.B. 0,38mm Durchmesser) (z.B. https://www.digikey.de/de/products/detail/chip-quik-inc/SMDSWLF-015-1OZ/9558153)
+- Schleifpapier (z.B. https://www.amazon.de/dp/B0DLWW9518)
+- Silikonöl (z.B. https://www.amazon.de/dp/B089SQCN5G)
+- verschiedenfarbige dünne Kabel (Litze) (z.B. https://www.amazon.de/dp/B07TV54V2T)
 # Werkzeuge
  - Lötkolben
  - Heißluftpistole
