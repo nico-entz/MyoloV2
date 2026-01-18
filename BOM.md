@@ -5,7 +5,7 @@ In dieser Liste finden Sie alle benötigten Bauteile und Werkzeuge, um selbst ei
 ### Platine
 Platinenset **direkt** bestellen: [https://aisler.net/p/DRWNQMMB](https://aisler.net/p/DRWNQMMB)
 
-KiCAD-Dateien für Platinenset: https://https://github.com/nico-entz/MyoloV2/tree/main/PCB
+KiCAD-Dateien für Platinenset: https://github.com/nico-entz/MyoloV2/tree/main/PCB
 
 ###  Szintillatoren
 Szintillatoren (BC408 / 5x5x1cm) direkt bestellen (**2x**): https://www.ebay.de/itm/264903211281
