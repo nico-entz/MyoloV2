@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Myonendetektor</title>
+<style>
+  body { font-family: sans-serif; padding: 20px; max-width: 1200px; margin: 0 auto; }
+  button { margin: 5px; padding: 10px; cursor: pointer; }
+  input { padding: 5px; width: 200px; }
+  #output { margin-top: 10px; border: 1px solid #ccc; padding: 10px; height: 120px; overflow-y: auto; white-space: pre-wrap; font-family: monospace; font-size: 12px; }
+  #stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 20px; }
+  .stat-card { border: 1px solid #ddd; padding: 15px; border-radius: 5px; background: #f9f9f9; }
+  .stat-value { font-size: 24px; font-weight: bold; color: #2c5aa0; }
+  .stat-label { font-size: 14px; color: #666; margin-top: 5px; }
+  .coincidence { color: #d9534f; }
+  #event-list { margin-top: 20px; max-height: 250px; overflow-y: auto; border: 1px solid #ddd; padding: 10px; }
+  .event-item { padding: 8px; border-bottom: 1px solid #eee; font-family: monospace; font-size: 13px; }
+  .event-item.coincidence { background: #fff3cd; border-left: 4px solid #d9534f; }
+  .event-item:hover { background: #f5f5f5; }
+  h3 { color: #333; margin-top: 20px; }
+  .settings { margin: 15px 0; padding: 10px; background: #f0f0f0; border-radius: 5px; }
+  .settings label { margin-right: 10px; }
+</style>
+</head>
+<body>
+
+<h2>Myonendetektor Auswertung</h2>
+
+<button id="connectBtn">Detektor verbinden</button>
+<button id="disconnectBtn" disabled>Verbindung trennen</button>
+<button id="resetBtn">Statistik zurücksetzen</button>
+<br>
+
+<div class="settings">
+  <label>Koinzidenz-Zeitfenster (μs): 
+    <input type="number" id="windowInput" value="100" min="10" max="1000" step="10">
+  </label>
+</div>
+
+<div id="stats">
+  <div class="stat-card">
+    <div class="stat-value" id="detector0Count">0</div>
+    <div class="stat-label">Ereignisse Detektor 0</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value" id="detector0Rate">0.00</div>
+    <div class="stat-label">Detektor 0 Rate (1/min)</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value" id="detector1Count">0</div>
+    <div class="stat-label">Ereignisse Detektor 1</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value" id="detector1Rate">0.00</div>
+    <div class="stat-label">Detektor 1 Rate (1/min)</div>
+  </div>
+  <div class="stat-card coincidence">
+    <div class="stat-value" id="coincidenceCount">0</div>
+    <div class="stat-label">Detektierte Myonen</div>
+  </div>
+  <div class="stat-card coincidence">
+    <div class="stat-value" id="coincidenceRate">0.00</div>
+    <div class="stat-label">Myonen-Rate (1/min)</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value" id="runtime">00:00:00</div>
+    <div class="stat-label">Laufzeit</div>
+  </div>
+</div>
+
+<h3>Letzte Events (Koinzidenzen markiert)</h3>
+<div id="event-list"></div>
+
+<h3>Rohdaten</h3>
+<div id="output"></div>
+
+<script>
+let port;
+let reader;
+let keepReading = false;
+
+const output = document.getElementById('output');
+const connectBtn = document.getElementById('connectBtn');
+const disconnectBtn = document.getElementById('disconnectBtn');
+const resetBtn = document.getElementById('resetBtn');
+const windowInput = document.getElementById('windowInput');
+
+// Statistik-Variablen
+let events = [];
+let detector0Events = [];
+let detector1Events = [];
+let coincidences = [];
+let startTime = null;
+let runtimeInterval = null;
+
+function log(text) {
+  output.textContent += text + '\n';
+  output.scrollTop = output.scrollHeight;
+}
+
+async function connectSerial() {
+  try {
+    port = await navigator.serial.requestPort();
+    await port.open({ baudRate: 9600 });
+    log('Port geöffnet');
+
+    connectBtn.disabled = true;
+    disconnectBtn.disabled = false;
+
+    if (!startTime) {
+      startTime = Date.now();
+      startRuntimeCounter();
+    }
+
+    keepReading = true;
+    readLoop();
+  } catch (err) {
+    log('Fehler beim Verbinden: ' + err);
+  }
+}
+
+async function readLoop() {
+  const decoder = new TextDecoder();
+  reader = port.readable.getReader();
+
+  let buffer = '';
+
+  try {
+    while (keepReading) {
+      const { value, done } = await reader.read();
+      if (done) break;
+
+      if (value) {
+        buffer += decoder.decode(value, { stream: true });
+
+        let lines = buffer.split('\n');
+        buffer = lines.pop();
+
+        for (const line of lines) {
+          if (line.trim() !== '') {
+            log(line.trim());
+            processLine(line.trim());
+          }
+        }
+      }
+    }
+  } catch (err) {
+    log('Lesefehler: ' + err);
+  } finally {
+    reader.releaseLock();
+  }
+}
+
+async function disconnectSerial() {
+  keepReading = false;
+  if (reader) await reader.cancel();
+  if (port) await port.close();
+  log('Port geschlossen');
+
+  connectBtn.disabled = false;
+  disconnectBtn.disabled = true;
+}
+
+function processLine(line) {
+  // Format: detector_id,timestamp_microseconds,energy_voltage
+  const parts = line.split(',');
+  if (parts.length !== 3) return;
+  
+  const detectorId = parseInt(parts[0]);
+  const timestamp = parseInt(parts[1]);
+  const energy = parseFloat(parts[2]);
+  
+  if (isNaN(detectorId) || isNaN(timestamp) || isNaN(energy)) return;
+  
+  const event = {
+    detectorId,
+    timestamp,
+    energy,
+    receivedAt: Date.now(),
+    isCoincidence: false
+  };
+  
+  events.push(event);
+  
+  // Nach Detektor sortieren
+  if (detectorId === 0) {
+    detector0Events.push(event);
+  } else if (detectorId === 1) {
+    detector1Events.push(event);
+  }
+  
+  // Koinzidenzen prüfen
+  checkCoincidences(event);
+  
+  updateStatistics();
+  updateEventList();
+}
+
+function checkCoincidences(newEvent) {
+  const timeWindow = parseInt(windowInput.value);
+  
+  // Je nach Detektor ID, prüfe gegen den anderen Detektor
+  const otherDetectorEvents = newEvent.detectorId === 0 ? detector1Events : detector0Events;
+  
+  // Prüfe die letzten Events des anderen Detektors
+  for (let i = otherDetectorEvents.length - 1; i >= 0; i--) {
+    const otherEvent = otherDetectorEvents[i];
+    const timeDiff = Math.abs(newEvent.timestamp - otherEvent.timestamp);
+    
+    // Wenn Zeitdifferenz zu groß, breche ab (Events sind chronologisch)
+    if (timeDiff > timeWindow * 2) break;
+    
+    // Koinzidenz gefunden!
+    if (timeDiff <= timeWindow) {
+      newEvent.isCoincidence = true;
+      otherEvent.isCoincidence = true;
+      
+      // Prüfe ob diese Koinzidenz schon erfasst wurde
+      const alreadyRecorded = coincidences.some(c => 
+        (c.event0 === newEvent || c.event1 === newEvent) ||
+        (c.event0 === otherEvent || c.event1 === otherEvent)
+      );
+      
+      if (!alreadyRecorded) {
+        coincidences.push({
+          event0: newEvent.detectorId === 0 ? newEvent : otherEvent,
+          event1: newEvent.detectorId === 1 ? newEvent : otherEvent,
+          timeDiff: timeDiff
+        });
+      }
+      break;
+    }
+  }
+}
+
+function updateStatistics() {
+  // Detektor-spezifische Counts
+  document.getElementById('detector0Count').textContent = detector0Events.length;
+  document.getElementById('detector1Count').textContent = detector1Events.length;
+  
+  // Koinzidenzen
+  document.getElementById('coincidenceCount').textContent = coincidences.length;
+  
+  // Raten berechnen (Events pro Minute)
+  if (startTime) {
+    const runtimeSeconds = (Date.now() - startTime) / 1000;
+    const runtimeMinutes = runtimeSeconds / 60;
+    
+    if (runtimeMinutes > 0) {
+      const detector0Rate = detector0Events.length / runtimeMinutes;
+      const detector1Rate = detector1Events.length / runtimeMinutes;
+      const coincidenceRate = coincidences.length / runtimeMinutes;
+      
+      document.getElementById('detector0Rate').textContent = detector0Rate.toFixed(2);
+      document.getElementById('detector1Rate').textContent = detector1Rate.toFixed(2);
+      document.getElementById('coincidenceRate').textContent = coincidenceRate.toFixed(2);
+    }
+  }
+
+}
+
+function updateEventList() {
+  const eventList = document.getElementById('event-list');
+  const lastEvents = events.slice(-20).reverse();
+  
+  eventList.innerHTML = lastEvents.map(e => {
+    const className = e.isCoincidence ? 'event-item coincidence' : 'event-item';
+    const marker = e.isCoincidence ? '⚡ KOINZIDENZ | ' : '';
+    return `<div class="${className}">${marker}Det ${e.detectorId} | ${e.timestamp} μs | ${e.energy.toFixed(3)} V</div>`;
+  }).join('');
+}
+
+function startRuntimeCounter() {
+  runtimeInterval = setInterval(() => {
+    if (startTime) {
+      const elapsed = Math.floor((Date.now() - startTime) / 1000);
+      const hours = Math.floor(elapsed / 3600).toString().padStart(2, '0');
+      const minutes = Math.floor((elapsed % 3600) / 60).toString().padStart(2, '0');
+      const seconds = (elapsed % 60).toString().padStart(2, '0');
+      document.getElementById('runtime').textContent = `${hours}:${minutes}:${seconds}`;
+    }
+  }, 1000);
+}
+
+function resetStatistics() {
+  events = [];
+  detector0Events = [];
+  detector1Events = [];
+  coincidences = [];
+  startTime = Date.now();
+  
+  updateStatistics();
+  updateEventList();
+  
+  output.textContent = '';
+  log('Statistik zurückgesetzt');
+}
+
+connectBtn.addEventListener('click', connectSerial);
+disconnectBtn.addEventListener('click', disconnectSerial);
+resetBtn.addEventListener('click', resetStatistics);
+</script>
+
+</body>
+</html>

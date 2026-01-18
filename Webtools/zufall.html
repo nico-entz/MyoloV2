@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Quanten-Passwortgenerator</title>
+<style>
+  body { 
+    font-family: 'Segoe UI', Tafont-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding: 0px; 
+    max-width: 800px; 
+    margin: 0 auto;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: calc(100vh - 40px);
+  }
+  
+  .container {
+    background: white;
+    border-radius: 20px;
+    padding: 20px;
+    margin-top:40px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  }
+  
+  h1 {
+    color: #333;
+    margin-top: 0;
+    font-size: 32px;
+    text-align: center;
+  }
+  
+  .subtitle {
+    text-align: center;
+    color: #666;
+    margin-bottom: 30px;
+    font-size: 14px;
+  }
+  
+  .controls {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+  }
+  
+  button {
+    padding: 12px 24px;
+    cursor: pointer;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    transition: all 0.3s;
+  }
+  
+  #connectBtn {
+    background: #667eea;
+    color: white;
+    flex: 1;
+  }
+  
+  #connectBtn:hover:not(:disabled) {
+    background: #5568d3;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+  }
+  
+  #disconnectBtn {
+    background: #f56565;
+    color: white;
+    flex: 1;
+  }
+  
+  #disconnectBtn:hover:not(:disabled) {
+    background: #e53e3e;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(245, 101, 101, 0.4);
+  }
+  
+  button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  
+  .settings {
+    margin-bottom: 30px;
+    padding: 20px;
+    background: #f7fafc;
+    border-radius: 10px;
+    border: 2px solid #e2e8f0;
+  }
+  
+  .settings label {
+    display: block;
+    margin-bottom: 12px;
+    color: #4a5568;
+    font-weight: 600;
+    font-size: 14px;
+  }
+  
+  input[type="number"] {
+    padding: 10px;
+    width: 100px;
+    border: 2px solid #cbd5e0;
+    border-radius: 6px;
+    font-size: 16px;
+  }
+  
+  input[type="checkbox"] {
+    margin-right: 8px;
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+  }
+  
+  .checkbox-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 10px;
+  }
+  
+  .checkbox-label {
+    display: flex;
+    align-items: center;
+    font-weight: normal;
+    cursor: pointer;
+  }
+  
+  .password-display {
+    background: #1a202c;
+    color: #48bb78;
+    padding: 20px;
+    border-radius: 10px;
+    font-family: 'Courier New', monospace;
+    font-size: 24px;
+    text-align: center;
+    min-height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    word-break: break-all;
+    margin-bottom: 20px;
+    border: 3px solid #2d3748;
+  }
+  
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
+    margin-top: 20px;
+  }
+  
+  .stat-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+  }
+  
+  .stat-value {
+    font-size: 32px;
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+  
+  .stat-label {
+    font-size: 12px;
+    opacity: 0.9;
+  }
+  
+  .copy-btn {
+    background: #48bb78;
+    color: white;
+    width: 100%;
+    padding: 15px;
+    font-size: 18px;
+  }
+  
+  .copy-btn:hover:not(:disabled) {
+    background: #38a169;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(72, 187, 120, 0.4);
+  }
+  
+  .copy-btn.copied {
+    background: #4299e1;
+  }
+  
+  .entropy-bar {
+    height: 8px;
+    background: #e2e8f0;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-top: 10px;
+  }
+  
+  .entropy-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #f56565 0%, #ed8936 25%, #ecc94b 50%, #48bb78 100%);
+    transition: width 0.3s;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>🔐 Quanten-Passwortgenerator</h1>
+  <div class="subtitle">Echter Zufall aus ionisierender Strahlung</div>
+
+  <div class="controls">
+    <button id="connectBtn">Detektor verbinden</button>
+    <button id="disconnectBtn" disabled>Verbindung trennen</button>
+  </div>
+
+  <div class="settings">
+    <label>Passwortlänge (Zeichen): 
+      <input type="number" id="lengthInput" value="16" min="8" max="64" step="1">
+    </label>
+    <label>Zeichensatz:</label>
+    <div class="checkbox-group">
+      <label class="checkbox-label">
+        <input type="checkbox" id="chkLowercase" checked> Kleinbuchstaben (a-z)
+      </label>
+      <label class="checkbox-label">
+        <input type="checkbox" id="chkUppercase" checked> Großbuchstaben (A-Z)
+      </label>
+      <label class="checkbox-label">
+        <input type="checkbox" id="chkNumbers" checked> Zahlen (0-9)
+      </label>
+      <label class="checkbox-label">
+        <input type="checkbox" id="chkSpecial" checked> Sonderzeichen (!@#$%...)
+      </label>
+    </div>
+    <div class="entropy-bar">
+      <div class="entropy-fill" id="entropyFill" style="width: 0%"></div>
+    </div>
+  </div>
+
+  <div class="password-display" id="passwordDisplay">
+    Verbinde den Detektor, um ein Passwort zu generieren...
+  </div>
+
+  <button class="copy-btn" id="copyBtn" disabled>📋 Passwort kopieren</button>
+
+  <div class="stats">
+    <div class="stat-card">
+      <div class="stat-value" id="bitCount">0</div>
+      <div class="stat-label">Bits gesammelt</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" id="eventCount">0</div>
+      <div class="stat-label">Ereignisse</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" id="eventRate">0</div>
+      <div class="stat-label">Events/Sekunde</div>
+    </div>
+  </div>
+</div>
+
+<script>
+let port;
+let reader;
+let keepReading = false;
+
+const connectBtn = document.getElementById('connectBtn');
+const disconnectBtn = document.getElementById('disconnectBtn');
+const lengthInput = document.getElementById('lengthInput');
+const passwordDisplay = document.getElementById('passwordDisplay');
+const copyBtn = document.getElementById('copyBtn');
+const entropyFill = document.getElementById('entropyFill');
+
+const chkLowercase = document.getElementById('chkLowercase');
+const chkUppercase = document.getElementById('chkUppercase');
+const chkNumbers = document.getElementById('chkNumbers');
+const chkSpecial = document.getElementById('chkSpecial');
+
+let randomBits = '';
+let generatedPassword = '';
+let eventCount = 0;
+let startTime = null;
+
+const CHARSET = {
+  lowercase: 'abcdefghijklmnopqrstuvwxyz',
+  uppercase: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+  numbers: '0123456789',
+  special: '!@#$%^&*()_+-=[]{}|;:,.<>?'
+};
+
+function getCharset() {
+  let charset = '';
+  if (chkLowercase.checked) charset += CHARSET.lowercase;
+  if (chkUppercase.checked) charset += CHARSET.uppercase;
+  if (chkNumbers.checked) charset += CHARSET.numbers;
+  if (chkSpecial.checked) charset += CHARSET.special;
+  return charset || CHARSET.lowercase; // Fallback
+}
+
+function bitsToPassword(bits, length) {
+  const charset = getCharset();
+  let password = '';
+  
+  // Berechne wie viele Bits pro Zeichen benötigt werden
+  const bitsPerChar = Math.ceil(Math.log2(charset.length));
+  
+  for (let i = 0; i < length; i++) {
+    const startBit = i * bitsPerChar;
+    const endBit = startBit + bitsPerChar;
+    
+    if (endBit > bits.length) break;
+    
+    const charBits = bits.substring(startBit, endBit);
+    const charIndex = parseInt(charBits, 2) % charset.length;
+    password += charset[charIndex];
+  }
+  
+  return password;
+}
+
+async function connectSerial() {
+  try {
+    port = await navigator.serial.requestPort();
+    await port.open({ baudRate: 9600 });
+
+    connectBtn.disabled = true;
+    disconnectBtn.disabled = false;
+    
+    randomBits = '';
+    eventCount = 0;
+    startTime = Date.now();
+    updateDisplay();
+
+    keepReading = true;
+    readLoop();
+  } catch (err) {
+    alert('Fehler beim Verbinden: ' + err);
+  }
+}
+
+async function readLoop() {
+  const decoder = new TextDecoder();
+  reader = port.readable.getReader();
+
+  let buffer = '';
+
+  try {
+    while (keepReading) {
+      const { value, done } = await reader.read();
+      if (done) break;
+
+      if (value) {
+        buffer += decoder.decode(value, { stream: true });
+
+        let lines = buffer.split('\n');
+        buffer = lines.pop();
+
+        for (const line of lines) {
+          if (line.trim() !== '') {
+            processLine(line.trim());
+          }
+        }
+      }
+    }
+  } catch (err) {
+    console.error('Lesefehler:', err);
+  } finally {
+    reader.releaseLock();
+  }
+}
+
+async function disconnectSerial() {
+  keepReading = false;
+  if (reader) await reader.cancel();
+  if (port) await port.close();
+
+  connectBtn.disabled = false;
+  disconnectBtn.disabled = true;
+}
+
+function processLine(line) {
+  // Format: detector_id,timestamp_microseconds,energy_voltage
+  const parts = line.split(',');
+  if (parts.length !== 3) return;
+  
+  const timestamp = parseInt(parts[1]);
+  if (isNaN(timestamp)) return;
+  
+  // Bit generieren: 0 wenn gerade, 1 wenn ungerade
+  const bit = timestamp % 2 === 0 ? '0' : '1';
+  
+  eventCount++;
+  
+  const targetLength = parseInt(lengthInput.value);
+  const charset = getCharset();
+  const bitsPerChar = Math.ceil(Math.log2(charset.length));
+  const bitsNeeded = targetLength * bitsPerChar;
+  
+  if (randomBits.length < bitsNeeded) {
+    randomBits += bit;
+    generatedPassword = bitsToPassword(randomBits, targetLength);
+  }
+  
+  updateDisplay();
+  
+  // Auto-disconnect wenn genug Bits gesammelt
+  if (randomBits.length >= bitsNeeded && keepReading) {
+    setTimeout(() => disconnectSerial(), 500);
+  }
+}
+
+function updateDisplay() {
+  const targetLength = parseInt(lengthInput.value);
+  const charset = getCharset();
+  const bitsPerChar = Math.ceil(Math.log2(charset.length));
+  const bitsNeeded = targetLength * bitsPerChar;
+  
+  const progress = Math.min(100, (randomBits.length / bitsNeeded) * 100);
+  
+  entropyFill.style.width = progress + '%';
+  
+  document.getElementById('bitCount').textContent = randomBits.length;
+  document.getElementById('eventCount').textContent = eventCount;
+  
+  if (startTime) {
+    const elapsed = (Date.now() - startTime) / 1000;
+    const rate = elapsed > 0 ? (eventCount / elapsed).toFixed(1) : 0;
+    document.getElementById('eventRate').textContent = rate;
+  }
+  
+  if (randomBits.length >= bitsNeeded) {
+    passwordDisplay.textContent = generatedPassword;
+    copyBtn.disabled = false;
+  } else if (generatedPassword.length > 0) {
+    passwordDisplay.textContent = generatedPassword + '...';
+    copyBtn.disabled = true;
+  } else {
+    passwordDisplay.textContent = 'Sammle Quantenzufallszahlen...';
+    copyBtn.disabled = true;
+  }
+}
+
+async function copyPassword() {
+  try {
+    await navigator.clipboard.writeText(generatedPassword);
+    copyBtn.textContent = '✅ Kopiert!';
+    copyBtn.classList.add('copied');
+    setTimeout(() => {
+      copyBtn.textContent = '📋 Passwort kopieren';
+      copyBtn.classList.remove('copied');
+    }, 2000);
+  } catch (err) {
+    alert('Fehler beim Kopieren: ' + err);
+  }
+}
+
+connectBtn.addEventListener('click', connectSerial);
+disconnectBtn.addEventListener('click', disconnectSerial);
+copyBtn.addEventListener('click', copyPassword);
+
+lengthInput.addEventListener('change', () => {
+  randomBits = '';
+  generatedPassword = '';
+  eventCount = 0;
+  updateDisplay();
+});
+
+// Reset bei Änderung des Zeichensatzes
+[chkLowercase, chkUppercase, chkNumbers, chkSpecial].forEach(checkbox => {
+  checkbox.addEventListener('change', () => {
+    randomBits = '';
+    generatedPassword = '';
+    eventCount = 0;
+    updateDisplay();
+  });
+});
+</script>
+
+</body>
+</html>
