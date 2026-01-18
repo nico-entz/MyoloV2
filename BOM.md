@@ -77,7 +77,7 @@ Amazon: https://www.amazon.de/dp/B077MJKCVT (BluePill) | https://www.amazon.de/d
  - Schwarzes Isolierband aus dem Elektronikbereich (https://www.amazon.de/dp/B0GBWG8949)
  - Lötzinn, möglichst fein (z.B. 0,38mm Durchmesser) (z.B. https://www.digikey.de/de/products/detail/chip-quik-inc/SMDSWLF-015-1OZ/9558153)
  - Schleifpapier (z.B. https://www.amazon.de/dp/B0DLWW9518)
- - Silikonöl (z.B. 
+ - Silikonöl (z.B. https://www.amazon.de/dp/B089SQCN5G)
  - verschiedenfarbige Kabel (Litze)
 # Werkzeuge
  - Lötkolben
