@@ -13622,7 +13622,7 @@
 				(hide yes)
 			)
 		)
-		(property "Footprint" "Custom:1x6 NoGND"
+		(property "Footprint" "Custom:SdHEAD"
 			(at 17.78 134.62 0)
 			(effects
 				(font
