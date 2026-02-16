@@ -14,13 +14,13 @@ Vorschläge für alternative Bezugsquellen sind jederzeit willkommen.
 ### Mikrocontroller
 |Bezeichnung auf Platine / Schaltplan |   Typ       | Anzahl
 |---------------------|----------------------------------|-------------------------------|
-|U3                   | BluePill-Board mit STM32F103C6T8 | 1
+|U3                   | BluePill-Board mit STM32F103C8T6 | 1
 | zur Programmierung  | ST-Link v2        						    | 1
 BluePill-Board und STLink finden Sie auf gängigen Plattformen, z.B.  
 
-ebay: https://www.ebay.de/itm/406405705535 (BluePill) | https://www.ebay.de/itm/116898601926 (ST-Link)
+ebay: https://www.ebay.de/itm/306207121511 (BluePill / STM32F103C8T6) | https://www.ebay.de/itm/116898601926 (ST-Link)
 
-Amazon: https://www.amazon.de/dp/B077MJKCVT (BluePill) | https://www.amazon.de/dp/B07QBLNDPM (ST-Link)
+Amazon: https://www.amazon.de/dp/B07CRHYTDG (BluePill / STM32F103C8T6) | https://www.amazon.de/dp/B07YJPDDKQ (ST-Link)
 
 ## Kleinteile
 ### Lichtdetektoren / SiPM
