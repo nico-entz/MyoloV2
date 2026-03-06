@@ -68,7 +68,7 @@ Amazon: https://www.amazon.de/dp/B07CRHYTDG (BluePill / STM32F103C8T6) | https:/
 ### Spulen / Induktivitäten
 |Bezeichnung auf Platine / Schaltplan |Wert       | Anzahl
 |-------------------|----------------------------|-------------------------------|
-|L1, L2             | 47 uF                      | 2
+|L1, L2             | 47 uH                      | 2
 
 # Verbrauchsmaterial
 - Teflonband aus dem Sanitärbereich (z.B. https://www.amazon.de/dp/B09GM4F8T8)
