@@ -39,7 +39,7 @@ z.B. bei DigiKey
 ### Operationsverstärker
 |Bezeichnung auf Platine / Schaltplan |   Typ    | Anzahl
 |----------------|-------------------------------|-------------------------------|
-|U1, U2          | LM6172                        | 2
+|U1, U2          | LM6172IN                      | 2
 
 z.B. DigiKey oder günstiger: https://www.ebay.de/itm/306321199968
 
