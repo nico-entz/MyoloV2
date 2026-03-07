@@ -16,6 +16,8 @@ Vorschläge für alternative Bezugsquellen sind jederzeit willkommen.
 |---------------------|----------------------------------|-------------------------------|
 |U3                   | BluePill-Board mit STM32F103C8T6 | 1
 | zur Programmierung  | ST-Link v2        						    | 1
+
+
 BluePill-Board und STLink finden Sie auf gängigen Plattformen, z.B.  
 
 ebay: https://www.ebay.de/itm/306207121511 (BluePill / STM32F103C8T6) | https://www.ebay.de/itm/116898601926 (ST-Link)
