@@ -38,6 +38,8 @@ z.B. bei DigiKey
 |DCDC1           | SDT01F05D15                   | 1
 |DCDC2           | MAX5026EU_T    							 | 1
 
+z.B. bei DigiKey
+
 ### Operationsverstärker
 |Bezeichnung auf Platine / Schaltplan |   Typ    | Anzahl
 |----------------|-------------------------------|-------------------------------|
