@@ -83,7 +83,7 @@ z.B. DigiKey oder günstiger: https://www.ebay.de/itm/306321199968
 - Teflonband aus dem Sanitärbereich (z.B. https://www.amazon.de/dp/B09GM4F8T8)
 - Schwarzes Isolierband aus dem Elektronikbereich (z.B. https://www.amazon.de/dp/B0GBWG8949)
 - Lötzinn, möglichst fein (z.B. 0,38mm Durchmesser) (z.B. https://www.digikey.de/de/products/detail/chip-quik-inc/SMDSWLF-015-1OZ/9558153)
-- Schleifpapier (z.B. https://www.amazon.de/dp/B0DLWW9518)
+- Schleifpapier (z.B. https://www.amazon.de/dp/B085QCYMRY)
 - Silikonöl (z.B. https://www.amazon.de/dp/B089SQCN5G)
 - verschiedenfarbige dünne Kabel (Litze) (z.B. https://www.amazon.de/dp/B07TV54V2T)
 # Werkzeuge
