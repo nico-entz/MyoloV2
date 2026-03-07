@@ -27,6 +27,8 @@ Amazon: https://www.amazon.de/dp/B07CRHYTDG (BluePill / STM32F103C8T6) | https:/
 |Bezeichnung auf Platine / Schaltplan |   Typ    | Anzahl
 |----------------|-------------------------------|-------------------------------|
 |SiPM1, SiPM2    | MICROFC-60035-SMT-TR          | 2        
+z.B. bei DigiKey
+
 ### Spannungswandler
 |Bezeichnung auf Platine / Hinweis |   Typ    | Anzahl
 |----------------|-------------------------------|-------------------------------|
@@ -37,6 +39,7 @@ Amazon: https://www.amazon.de/dp/B07CRHYTDG (BluePill / STM32F103C8T6) | https:/
 |Bezeichnung auf Platine / Schaltplan |   Typ    | Anzahl
 |----------------|-------------------------------|-------------------------------|
 |U1, U2          | LM6172                        | 2
+z.B. DigiKey oder günstiger: https://www.ebay.de/itm/306321199968
 
 ### Widerstände
 |Bezeichnung auf Platine / Schaltplan |   Wert   | Anzahl
