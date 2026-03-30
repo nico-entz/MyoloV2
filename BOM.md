@@ -79,6 +79,12 @@ z.B. DigiKey oder günstiger: https://www.ebay.de/itm/306321199968
 |-------------------|----------------------------|-------------------------------|
 |L1, L2             | 47 uH                      | 2
 
+### Sonstiges
+|Komponente         |Bezeichnung                 | Anzahl                        | Bezugsquelle |
+|-------------------|----------------------------|-------------------------------|--------------|
+|Display            | SSD 1306                   | 1                             | https://www.amazon.de/dp/B0CFFB62F4 |
+|SPI-SD-Breakout    |                            | 1                             | https://www.amazon.de/dp/B09YYG6BT3 |
+
 # Verbrauchsmaterial
 - Teflonband aus dem Sanitärbereich (z.B. https://www.amazon.de/dp/B09GM4F8T8)
 - Schwarzes Isolierband aus dem Elektronikbereich (z.B. https://www.amazon.de/dp/B0GBWG8949)
