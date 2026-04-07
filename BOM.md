@@ -8,7 +8,7 @@ Platinenset **direkt** bestellen: [https://aisler.net/p/DRWNQMMB](https://aisler
 KiCAD-Dateien für Platinenset: https://github.com/nico-entz/MyoloV2/tree/main/PCB
 
 ###  Szintillatoren
-Szintillatoren (BC408 / 5x5x1cm) direkt bestellen (**2x**): https://www.ebay.de/itm/264903211281
+Szintillatoren (BC408 / 5x5x1cm) direkt bestellen (**2x**): https://www.ebay.de/itm/264903211281 oder https://www.ebay.de/itm/254751779655
 
 Vorschläge für alternative Bezugsquellen sind jederzeit willkommen.
 ### Mikrocontroller
